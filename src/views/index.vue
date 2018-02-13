@@ -2068,12 +2068,12 @@
                     
                   })
                   .catch((e) => {
-                    //console.log(e);
+                    console.log("e", e);
+                    console.log("e code", e.statuscode);
                     // this.componentId = 'buyPage';
+                    alert('subscription is over!')
                     this.newProjectFolderDialog = false;
                     this.fullscreenLoading = false;
-                    // this.buyNowDialog = true;
-                    console.log(e)
                   });
                 // })
 
@@ -6265,5 +6265,9 @@
 }
 el-tab-pane {
   font-size: 18px !important;
+}
+
+.el-select-dropdown{
+  max-width: 325px;
 }
 </style>
