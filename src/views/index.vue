@@ -504,7 +504,7 @@
       //   this.$router.push('/login');
       // }
     },
-    mounted () {
+    async mounted () {
 
       //console.log('Index Page: ', Cookies.get('email'));
 
@@ -611,34 +611,39 @@
               }
           }
       });
-    this.getDataOfSubscriptionUser();
 
-       if(Cookies.get("subscriptionId") && Cookies.get("subscriptionId") != undefined){
-            this.value = Cookies.get("subscriptionId")
-        }
+      // SUBSCRIPTION SELECTION ON LOAD
+      let sub_id = []
+      await axios.get(config.userDetail ,{ headers: { 'Authorization': Cookies.get('auth_token') } })
+        .then(response => {
+          let obj_val = Object.values(response.data.data.package)
+          let obj_key = Object.keys(response.data.data.package)
+          for (let index = 0; index < obj_val.length; index++) {
+            sub_id.push({"value":obj_val[index].subscriptionId, "label":obj_val[index].name})
+          }
+          this.options = sub_id
+          console.log("sub_id", sub_id)
+          this.value = sub_id[0].value
+          //return sub_id
+        })
     },
 
     methods: {
-      async getDataOfSubscriptionUser(){
-        let sub_id = []
-        await axios.get(config.userDetail ,{ headers: { 'Authorization': Cookies.get('auth_token') } })
-          .then(response => {
-            let obj_val = Object.values(response.data.data.package)
-            let obj_key = Object.keys(response.data.data.package)
-            for (let index = 0; index < obj_val.length; index++) {
-              sub_id.push({"value":obj_val[index].subscriptionId, "label":obj_val[index].name})
-            }
-            this.options = sub_id
-
-             if(!Cookies.get("subscriptionId") || Cookies.get("subscriptionId") == undefined || Cookies.get("subscriptionId") == ""){
-                  this.value = sub_id[0].value;
-                  let location = psl.parse(window.location.hostname);
-                  location = location.domain === null ? location.input : location.domain;
-
-                  Cookies.set("subscriptionId" , this.value, {domain: location});
-              }
-          })
-      },
+      // async getDataOfSubscriptionUser(){
+      //   let sub_id = []
+      //   await axios.get(config.userDetail ,{ headers: { 'Authorization': Cookies.get('auth_token') } })
+      //     .then(response => {
+      //       let obj_val = Object.values(response.data.data.package)
+      //       let obj_key = Object.keys(response.data.data.package)
+      //       for (let index = 0; index < obj_val.length; index++) {
+      //         sub_id.push({"value":obj_val[index].subscriptionId, "label":obj_val[index].name})
+      //       }
+      //       this.options = sub_id
+      //       console.log("sub_id", sub_id)
+      //       return sub_id
+      //     })
+      // },
+      
       changeSubscription(){
         this.editableTabs = []
 
@@ -649,7 +654,6 @@
             Cookies.set('userDetailId', response.data.userId, {domain: location});
             Cookies.set('subscriptionId', response.data.sub_id, {domain: location});
             axios.defaults.headers.common['Authorization'] =  Cookies.get('auth_token');
-            //axios.defaults.headers.common['subscriptionId'] =  this.value;
             this.getData();
           })
       },
