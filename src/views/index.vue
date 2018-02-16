@@ -763,10 +763,10 @@
       },
       changeSubscription(){
         this.editableTabs = []
-        console.log("this.value", this.value)
-        axios.get(config.subscriptionApi  + this.value ,{ headers: { 'Authorization': Cookies.get('auth_token') } })
+        // console.log("this.value", this.value)
+        axios.get(config.subscriptionApi + this.value ,{ headers: { 'Authorization': Cookies.get('auth_token') } })
           .then(response => {
-            console.log("response",response)
+            // console.log("response",response)
             Cookies.set('userDetailId', response.data.userId);
             Cookies.set('subscriptionId', response.data.sub_id);
             axios.defaults.headers.common['Authorization'] =  Cookies.get('auth_token');
@@ -864,9 +864,11 @@
         // let username_session = this.$session.get('username');
         //// console.log("username_session", username_session)
         // axios.get(config.baseURL + '/flows-dir-listing')
-        axios.get(config.baseURL + '/flows-dir-listing?website=' + Cookies.get('userDetailId'))
+        axios.get(config.baseURL + '/flows-dir-listing?website=' + Cookies.get('userDetailId') +'&subscriptionId=' + this.value)
           .then(async response => {
+
             response.data.children = this.getTreeData(response.data);
+            console.log('&&&&&&&&&&',response.data.children)
 
             // setTimeout(async function(){
               for (let i = 0; i < response.data.children.length; i++) {
@@ -923,7 +925,7 @@
               message: 'Services unreachable. Please try again later.',
               type: 'error'
             });
-            //console.log(e);
+            console.log(e);
           });
       },
 
